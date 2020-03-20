@@ -1,8 +1,6 @@
 package it.vitalegi.propertiesanalyzer;
 
-import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Enumeration;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -18,6 +16,8 @@ public class ProcessPropertiesImpl {
 	DocumentWriter writer;
 	List<PropertiesAlias> properties;
 	List<Matcher> matchers;
+
+	PropertiesUtilServiceImpl propertiesUtilService;
 
 	public ProcessPropertiesImpl() {
 		super();
@@ -47,87 +47,35 @@ public class ProcessPropertiesImpl {
 	}
 
 	protected List<String> getKeys() {
-		List<String> keys = getKeys(properties);
+		List<String> keys = propertiesUtilService.getKeys(properties);
 		keys.sort(Comparator.comparing(String::toString));
 		return keys;
 	}
 
 	protected void processKey(String key) {
 		writer.h2(key);
-		if (hasToBePrinted(key)) {
-			List<String> values = getValues(key);
+		List<String> values = getValues(key);
+		if (propertiesUtilService.hasMismatch(matchers, values)) {
 			for (int i = 0; i < properties.size(); i++) {
 				processValue(key, properties.get(i).getAlias(), values.get(i));
 			}
 		}
 	}
 
-	protected boolean hasToBePrinted(String key) {
-		List<String> values = getValues(key);
-		return hasToBePrinted(values);
-	}
-
-	protected boolean hasToBePrinted(List<String> values) {
-		for (Matcher matcher : matchers) {
-			if (matcher.anyMatches(values) && matcher.anyNotMatches(values)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
 	protected void processValue(String key, String alias, String value) {
 		writer.h3("Value: `" + value + "` - " + alias);
 
 		for (Matcher matcher : matchers) {
-			if (isInteresting(matcher, key, value)) {
+			List<String> values = getValues(key);
+			if (propertiesUtilService.isInteresting(matcher, values, value)) {
 				writer.list(matcher.name());
 			}
 		}
 		writer.newLine();
 	}
 
-	protected boolean isInteresting(Matcher matcher, String key, String value) {
-		List<String> values = getValues(key);
-		return isInteresting(matcher, values, value);
-	}
-
-	protected boolean isInteresting(Matcher matcher, List<String> values, String value) {
-		if (!matcher.anyMatches(values)) {
-			return false;
-		}
-		boolean match = matcher.matches(value);
-		if (match) {
-			return false;
-		}
-		return true;
-	}
-
 	protected List<String> getValues(String key) {
-		return getValues(properties, key);
+		return propertiesUtilService.getValues(properties, key);
 	}
 
-	protected List<String> getValues(List<PropertiesAlias> properties, String key) {
-		List<String> values = new ArrayList<>();
-		for (PropertiesAlias prop : properties) {
-			values.add(prop.getProperties().getProperty(key));
-		}
-		return values;
-	}
-
-	protected List<String> getKeys(List<PropertiesAlias> properties) {
-
-		List<String> keys = new ArrayList<>();
-
-		for (PropertiesAlias prop : properties) {
-			Enumeration<?> names = prop.getProperties().propertyNames();
-			while (names.hasMoreElements()) {
-				String next = names.nextElement().toString();
-				if (!keys.contains(next)) {
-					keys.add(next);
-				}
-			}
-		}
-		return keys;
-	}
 }
