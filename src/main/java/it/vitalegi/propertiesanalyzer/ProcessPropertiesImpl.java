@@ -1,27 +1,30 @@
 package it.vitalegi.propertiesanalyzer;
 
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Enumeration;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import it.vitalegi.propertiesanalyzer.matcher.SingleMatcher;
+import it.vitalegi.propertiesanalyzer.matcher.Matcher;
 import it.vitalegi.propertiesanalyzer.writer.DocumentWriter;
 
 public class ProcessPropertiesImpl {
 
-	Logger log = LoggerFactory.getLogger(GetPropertiesServiceImpl.class);
+	Logger log = LoggerFactory.getLogger(ProcessPropertiesImpl.class);
 
-	GetPropertiesServiceImpl getPropertiesService;
 	DocumentWriter writer;
 	List<PropertiesAlias> properties;
-	List<SingleMatcher> matchers;
+	List<Matcher> matchers;
 
-	public ProcessPropertiesImpl(GetPropertiesServiceImpl getPropertiesService, List<PropertiesAlias> properties,
-			List<SingleMatcher> matchers, DocumentWriter writer) {
+	public ProcessPropertiesImpl() {
 		super();
-		this.getPropertiesService = getPropertiesService;
+	}
+
+	public ProcessPropertiesImpl(List<PropertiesAlias> properties, List<Matcher> matchers, DocumentWriter writer) {
+		super();
 		this.properties = properties;
 		this.matchers = matchers;
 		this.writer = writer;
@@ -40,18 +43,18 @@ public class ProcessPropertiesImpl {
 	protected void printHeader() {
 		writer.h1("Diff");
 		writer.h2("Matchers used");
-		matchers.forEach(matcher -> writer.list(getMatcherName(matcher)));
+		matchers.forEach(matcher -> writer.list(matcher.name() + ": " + matcher.description()));
 	}
 
 	protected List<String> getKeys() {
-		List<String> keys = getPropertiesService.getKeys(properties);
+		List<String> keys = getKeys(properties);
 		keys.sort(Comparator.comparing(String::toString));
 		return keys;
 	}
 
 	protected void processKey(String key) {
 		writer.h2(key);
-		if (anyMatcherWithAnyMatch(key)) {
+		if (hasToBePrinted(key)) {
 			List<String> values = getValues(key);
 			for (int i = 0; i < properties.size(); i++) {
 				processValue(key, properties.get(i).getAlias(), values.get(i));
@@ -59,10 +62,14 @@ public class ProcessPropertiesImpl {
 		}
 	}
 
-	protected boolean anyMatcherWithAnyMatch(String key) {
+	protected boolean hasToBePrinted(String key) {
 		List<String> values = getValues(key);
-		for (SingleMatcher matcher : matchers) {
-			if (matcher.anyMatches(values)) {
+		return hasToBePrinted(values);
+	}
+
+	protected boolean hasToBePrinted(List<String> values) {
+		for (Matcher matcher : matchers) {
+			if (matcher.anyMatches(values) && matcher.anyNotMatches(values)) {
 				return true;
 			}
 		}
@@ -72,30 +79,55 @@ public class ProcessPropertiesImpl {
 	protected void processValue(String key, String alias, String value) {
 		writer.h3("Value: `" + value + "` - " + alias);
 
-		for (SingleMatcher matcher : matchers) {
-			processValueOnSingleMatcher(matcher, key, value);
+		for (Matcher matcher : matchers) {
+			if (isInteresting(matcher, key, value)) {
+				writer.list(matcher.name());
+			}
 		}
 		writer.newLine();
 	}
 
-	protected void processValueOnSingleMatcher(SingleMatcher matcher, String key, String value) {
+	protected boolean isInteresting(Matcher matcher, String key, String value) {
 		List<String> values = getValues(key);
+		return isInteresting(matcher, values, value);
+	}
 
+	protected boolean isInteresting(Matcher matcher, List<String> values, String value) {
 		if (!matcher.anyMatches(values)) {
-			return;
+			return false;
 		}
 		boolean match = matcher.matches(value);
 		if (match) {
-			return;
+			return false;
 		}
-		writer.list(getMatcherName(matcher) + ": KO");
+		return true;
 	}
 
 	protected List<String> getValues(String key) {
-		return getPropertiesService.getValues(properties, key);
+		return getValues(properties, key);
 	}
 
-	protected String getMatcherName(SingleMatcher matcher) {
-		return matcher.getClass().getSimpleName();
+	protected List<String> getValues(List<PropertiesAlias> properties, String key) {
+		List<String> values = new ArrayList<>();
+		for (PropertiesAlias prop : properties) {
+			values.add(prop.getProperties().getProperty(key));
+		}
+		return values;
+	}
+
+	protected List<String> getKeys(List<PropertiesAlias> properties) {
+
+		List<String> keys = new ArrayList<>();
+
+		for (PropertiesAlias prop : properties) {
+			Enumeration<?> names = prop.getProperties().propertyNames();
+			while (names.hasMoreElements()) {
+				String next = names.nextElement().toString();
+				if (!keys.contains(next)) {
+					keys.add(next);
+				}
+			}
+		}
+		return keys;
 	}
 }

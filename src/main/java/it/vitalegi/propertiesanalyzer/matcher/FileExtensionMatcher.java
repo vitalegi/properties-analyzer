@@ -3,6 +3,10 @@ package it.vitalegi.propertiesanalyzer.matcher;
 import it.vitalegi.propertiesanalyzer.util.StringUtil;
 
 public class FileExtensionMatcher extends AbstractMatcher {
+	@Override
+	public String description() {
+		return "Checks if text contains a file extension.";
+	}
 
 	@Override
 	public boolean matches(String value) {

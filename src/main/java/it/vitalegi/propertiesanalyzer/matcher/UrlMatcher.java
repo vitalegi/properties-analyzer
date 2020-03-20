@@ -4,6 +4,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 public class UrlMatcher extends AbstractMatcher {
+	@Override
+	public String description() {
+		return "Checks if the text is an URL.";
+	}
 
 	@Override
 	public boolean matches(String value) {

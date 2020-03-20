@@ -1,17 +1,19 @@
 package it.vitalegi.propertiesanalyzer.matcher;
 
-public class LongMatcher extends AbstractMatcher {
+public class DoubleMatcher extends AbstractMatcher {
 	@Override
 	public String description() {
-		return "Checks if the text is an integer number.";
+		return "Checks if the text is a decimal number.";
 	}
 
 	@Override
 	public boolean matches(String value) {
 		try {
-			Long.parseLong(value);
+			Double.parseDouble(value);
 			return true;
 		} catch (NumberFormatException e) {
+			return false;
+		} catch (NullPointerException e) {
 			return false;
 		}
 	}

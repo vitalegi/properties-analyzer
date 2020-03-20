@@ -4,33 +4,35 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import it.vitalegi.propertiesanalyzer.matcher.AbsolutePathMatcher;
-import it.vitalegi.propertiesanalyzer.matcher.BoolMatcher;
-import it.vitalegi.propertiesanalyzer.matcher.FileExtensionMatcher;
-import it.vitalegi.propertiesanalyzer.matcher.LongMatcher;
-import it.vitalegi.propertiesanalyzer.matcher.NotEmptyStringMatcher;
-import it.vitalegi.propertiesanalyzer.matcher.SingleMatcher;
-import it.vitalegi.propertiesanalyzer.matcher.TrimWhitespaceMatcher;
-import it.vitalegi.propertiesanalyzer.matcher.UrlMatcher;
+import it.vitalegi.propertiesanalyzer.matcher.Matcher;
 import it.vitalegi.propertiesanalyzer.util.PropertiesUtil;
 import it.vitalegi.propertiesanalyzer.writer.DocumentWriter;
 import it.vitalegi.propertiesanalyzer.writer.HtmlWriter;
 import it.vitalegi.propertiesanalyzer.writer.MarkdownWriter;
 
 @SpringBootTest(classes = SpringTestConfig.class)
-public class GetPropertiesServiceTest {
+public class ProcessPropertiesTest {
 
-	@Autowired
-	GetPropertiesServiceImpl service;
+	Logger log = LoggerFactory.getLogger(ProcessPropertiesTest.class);
+
+	ProcessPropertiesImpl service;
+
+	@BeforeEach
+	void init() {
+		service = new ProcessPropertiesImpl();
+	}
 
 	@Test
 	void testAnalyze() throws IOException {
@@ -52,22 +54,35 @@ public class GetPropertiesServiceTest {
 				"key1", "value1", //
 				"key3", "value3"));
 
-		List<SingleMatcher> matchers = Arrays.asList( //
-				new AbsolutePathMatcher(), //
-				new BoolMatcher(), //
-				new FileExtensionMatcher(), //
-				new LongMatcher(), //
-				new TrimWhitespaceMatcher(), //
-				new UrlMatcher(), //
-				new NotEmptyStringMatcher());
-
 		try (DocumentWriter writer = new MarkdownWriter("test.md")) {
-			new ProcessPropertiesImpl(service, properties, matchers, writer).process();
+			new ProcessPropertiesImpl(properties, Matcher.matchers(), writer).process();
 		}
 
 		try (DocumentWriter writer = new HtmlWriter("test.html")) {
-			new ProcessPropertiesImpl(service, properties, matchers, writer).process();
+			new ProcessPropertiesImpl(properties, Matcher.matchers(), writer).process();
 		}
+	}
+
+	@Test
+	void testProcessIncludesChanged() throws IOException {
+		List<PropertiesAlias> properties = new ArrayList<>();
+		properties.add(PropertiesUtil.createProperties("p1", //
+				"key1", "5", //
+				"key2", "txt"));
+		properties.add(PropertiesUtil.createProperties("p2", //
+				"key1", "6"));
+
+		String out = process(properties, Matcher.matchers());
+		log.info(">>" + out);
+	}
+
+	protected String process(List<PropertiesAlias> properties, List<Matcher> matchers) throws IOException {
+
+		ByteArrayOutputStream os = new ByteArrayOutputStream();
+		try (DocumentWriter writer = new MarkdownWriter(os)) {
+			new ProcessPropertiesImpl(properties, Matcher.matchers(), writer).process();
+		}
+		return os.toString("UTF-8");
 	}
 
 	@Test

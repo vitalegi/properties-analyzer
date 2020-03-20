@@ -8,6 +8,11 @@ import it.vitalegi.propertiesanalyzer.util.StringUtil;
 public class AbsolutePathMatcher extends AbstractMatcher {
 
 	@Override
+	public String description() {
+		return "Checks if the text could be an absolute path, both for windows or unix.";
+	}
+
+	@Override
 	public boolean matches(String value) {
 		if (StringUtil.isNullOrEmpty(value)) {
 			return false;
@@ -25,5 +30,4 @@ public class AbsolutePathMatcher extends AbstractMatcher {
 		}
 		return false;
 	}
-
 }
