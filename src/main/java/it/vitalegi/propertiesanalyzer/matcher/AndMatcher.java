@@ -16,13 +16,23 @@ public class AndMatcher implements Matcher {
 	}
 
 	@Override
-	public boolean matches(List<String> values) {
+	public boolean allMatches(List<String> values) {
 		for (Matcher matcher : matchers) {
-			if (!matcher.matches(values)) {
+			if (!matcher.allMatches(values)) {
 				return false;
 			}
 		}
 		return true;
+	}
+
+	@Override
+	public boolean anyMatches(List<String> values) {
+		for (Matcher matcher : matchers) {
+			if (matcher.anyMatches(values)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public List<Matcher> getMatchers() {

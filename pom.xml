@@ -11,7 +11,7 @@
 	</parent>
 	<groupId>it.vitalegi</groupId>
 	<artifactId>properties-analyzer</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.1</version>
 	<name>properties-analyzer</name>
 	<description>Demo project for Spring Boot</description>
 
@@ -52,6 +52,11 @@
 			<groupId>org.aspectj</groupId>
 			<artifactId>aspectjrt</artifactId>
 			<version>${org.aspectj.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.vladsch.flexmark</groupId>
+			<artifactId>flexmark-all</artifactId>
+			<version>0.60.2</version>
 		</dependency>
 	</dependencies>
 

@@ -1,6 +1,6 @@
 package it.vitalegi.propertiesanalyzer;
 
-import java.io.PrintWriter;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -15,15 +15,15 @@ import org.springframework.stereotype.Component;
 
 import it.vitalegi.propertiesanalyzer.matcher.AbsolutePathMatcher;
 import it.vitalegi.propertiesanalyzer.matcher.BoolMatcher;
-import it.vitalegi.propertiesanalyzer.matcher.EqualMatcher;
 import it.vitalegi.propertiesanalyzer.matcher.FileExtensionMatcher;
 import it.vitalegi.propertiesanalyzer.matcher.LongMatcher;
-import it.vitalegi.propertiesanalyzer.matcher.Matcher;
-import it.vitalegi.propertiesanalyzer.matcher.NotMatcher;
+import it.vitalegi.propertiesanalyzer.matcher.NotEmptyStringMatcher;
 import it.vitalegi.propertiesanalyzer.matcher.SingleMatcher;
 import it.vitalegi.propertiesanalyzer.matcher.TrimWhitespaceMatcher;
 import it.vitalegi.propertiesanalyzer.matcher.UrlMatcher;
 import it.vitalegi.propertiesanalyzer.util.PropertiesUtil;
+import it.vitalegi.propertiesanalyzer.writer.DocumentWriter;
+import it.vitalegi.propertiesanalyzer.writer.HtmlWriter;
 
 @Profile("prod")
 @Component
@@ -31,7 +31,7 @@ public class ProdApplicationRunner implements ApplicationRunner {
 	Logger log = LoggerFactory.getLogger(ProdApplicationRunner.class);
 
 	@Autowired
-	AnalyzePropertiesServiceImpl analyzePropertiesService;
+	GetPropertiesServiceImpl analyzePropertiesService;
 
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
@@ -58,17 +58,17 @@ public class ProdApplicationRunner implements ApplicationRunner {
 			properties.add(props);
 		}
 
-		Matcher filterBy = new NotMatcher(new EqualMatcher());
-		List<SingleMatcher> showMatchers = Arrays.asList( //
+		List<SingleMatcher> matchers = Arrays.asList( //
 				new AbsolutePathMatcher(), //
 				new BoolMatcher(), //
 				new FileExtensionMatcher(), //
 				new LongMatcher(), //
 				new TrimWhitespaceMatcher(), //
-				new UrlMatcher());
+				new UrlMatcher(), //
+				new NotEmptyStringMatcher());
 
-		try (PrintWriter writer = new PrintWriter(out)) {
-			new AnalyzeToMarkdownImpl(analyzePropertiesService, properties, filterBy, showMatchers, writer).process();
+		try (DocumentWriter writer = new HtmlWriter(new FileOutputStream(out))) {
+			new ProcessPropertiesImpl(analyzePropertiesService, properties, matchers, writer).process();
 		}
 	}
 }

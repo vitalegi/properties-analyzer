@@ -14,8 +14,13 @@ public class NotMatcher implements Matcher {
 	}
 
 	@Override
-	public boolean matches(List<String> values) {
-		return !matcher.matches(values);
+	public boolean allMatches(List<String> values) {
+		return !matcher.allMatches(values);
+	}
+
+	@Override
+	public boolean anyMatches(List<String> values) {
+		return !matcher.anyMatches(values);
 	}
 
 	public Matcher getMatcher() {

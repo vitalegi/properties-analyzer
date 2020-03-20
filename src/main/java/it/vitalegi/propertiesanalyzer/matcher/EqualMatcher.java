@@ -7,7 +7,7 @@ import it.vitalegi.propertiesanalyzer.util.ListUtil;
 public class EqualMatcher implements Matcher {
 
 	@Override
-	public boolean matches(List<String> values) {
+	public boolean allMatches(List<String> values) {
 		if (ListUtil.isEmpty(values)) {
 			return true;
 		}
@@ -18,6 +18,11 @@ public class EqualMatcher implements Matcher {
 			}
 		}
 		return true;
+	}
+
+	@Override
+	public boolean anyMatches(List<String> values) {
+		return allMatches(values);
 	}
 
 	protected boolean matches(String value, String compareTo) {

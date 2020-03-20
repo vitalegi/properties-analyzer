@@ -7,7 +7,7 @@ import it.vitalegi.propertiesanalyzer.util.ListUtil;
 public abstract class AbstractMatcher implements Matcher, SingleMatcher {
 
 	@Override
-	public boolean matches(List<String> values) {
+	public boolean allMatches(List<String> values) {
 		if (ListUtil.isEmpty(values)) {
 			return true;
 		}
@@ -17,5 +17,18 @@ public abstract class AbstractMatcher implements Matcher, SingleMatcher {
 			}
 		}
 		return true;
+	}
+
+	@Override
+	public boolean anyMatches(List<String> values) {
+		if (ListUtil.isEmpty(values)) {
+			return true;
+		}
+		for (String value : values) {
+			if (matches(value)) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

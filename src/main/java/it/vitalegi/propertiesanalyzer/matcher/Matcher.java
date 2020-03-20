@@ -4,5 +4,7 @@ import java.util.List;
 
 public interface Matcher {
 
-	boolean matches(List<String> values);
+	boolean allMatches(List<String> values);
+
+	boolean anyMatches(List<String> values);
 }

@@ -14,7 +14,7 @@ mvn clean package
 
 ```bash
 set PATH=C:\Program Files\Java\jdk1.8.0_131\bin;%PATH%
-java -jar .\target\properties-analyzer-0.0.1-SNAPSHOT.jar <OPTIONS>
+java -jar .\target\properties-analyzer-0.0.1.jar <OPTIONS>
 ```
 
 ### OPTIONS
@@ -36,6 +36,6 @@ Path where to store the resulting analysis
 
 #### Example usage
 
-`--a=test --f=test-application.properties --a=uat --f=uat-application.properties --a=preprod --f=preprod-application.properties --a=prod --f=prod-application.properties --o=diffs.md`
+`--a=test --f=test-application.properties --a=uat --f=uat-application.properties --a=preprod --f=preprod-application.properties --a=prod --f=prod-application.properties --o=diffs.html`
 
-Will analyze the files _test-application.properties_ (test), _uat-application.properties_ (uat), _preprod-application.properties_ (preprod), _prod-application.properties_ (prod), printing the results to file _diffs.md_.
+Will analyze the files _test-application.properties_ (test), _uat-application.properties_ (uat), _preprod-application.properties_ (preprod), _prod-application.properties_ (prod), printing the results to file _diffs.html_.

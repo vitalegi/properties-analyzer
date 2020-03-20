@@ -9,11 +9,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AnalyzePropertiesServiceImpl {
+public class GetPropertiesServiceImpl {
 
-	Logger log = LoggerFactory.getLogger(AnalyzePropertiesServiceImpl.class);
+	Logger log = LoggerFactory.getLogger(GetPropertiesServiceImpl.class);
 
-	protected List<String> getValues(List<PropertiesAlias> properties, String key) {
+	public List<String> getValues(List<PropertiesAlias> properties, String key) {
 		List<String> values = new ArrayList<>();
 		for (PropertiesAlias prop : properties) {
 			values.add(prop.getProperties().getProperty(key));
@@ -21,7 +21,7 @@ public class AnalyzePropertiesServiceImpl {
 		return values;
 	}
 
-	protected List<String> getKeys(List<PropertiesAlias> properties) {
+	public List<String> getKeys(List<PropertiesAlias> properties) {
 
 		List<String> keys = new ArrayList<>();
 

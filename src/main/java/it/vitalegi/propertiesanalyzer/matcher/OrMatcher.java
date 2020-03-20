@@ -16,9 +16,19 @@ public class OrMatcher implements Matcher {
 	}
 
 	@Override
-	public boolean matches(List<String> values) {
+	public boolean allMatches(List<String> values) {
 		for (Matcher matcher : matchers) {
-			if (matcher.matches(values)) {
+			if (matcher.allMatches(values)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public boolean anyMatches(List<String> values) {
+		for (Matcher matcher : matchers) {
+			if (matcher.anyMatches(values)) {
 				return true;
 			}
 		}
