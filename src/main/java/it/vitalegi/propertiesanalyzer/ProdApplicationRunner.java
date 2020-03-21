@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Profile;
@@ -20,6 +21,9 @@ import it.vitalegi.propertiesanalyzer.writer.HtmlWriter;
 @Component
 public class ProdApplicationRunner implements ApplicationRunner {
 	Logger log = LoggerFactory.getLogger(ProdApplicationRunner.class);
+
+	@Autowired
+	PropertiesAnalyzerFactory factory;
 
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
@@ -47,7 +51,9 @@ public class ProdApplicationRunner implements ApplicationRunner {
 		}
 
 		try (DocumentWriter writer = new HtmlWriter(new FileOutputStream(out))) {
-			new ProcessPropertiesImpl(properties, Matcher.matchers(), writer).process();
+
+			PropertiesAnalyzerImpl service = factory.newInstance(writer, properties, Matcher.matchers());
+			service.process();
 		}
 	}
 }

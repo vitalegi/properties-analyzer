@@ -5,33 +5,44 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
 
 import it.vitalegi.propertiesanalyzer.matcher.Matcher;
 import it.vitalegi.propertiesanalyzer.writer.DocumentWriter;
 
-public class ProcessPropertiesImpl {
+@Service
+@Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+public class PropertiesAnalyzerImpl {
 
-	Logger log = LoggerFactory.getLogger(ProcessPropertiesImpl.class);
+	Logger log = LoggerFactory.getLogger(PropertiesAnalyzerImpl.class);
 
 	DocumentWriter writer;
 	List<PropertiesAlias> properties;
 	List<Matcher> matchers;
 
+	@Autowired
 	PropertiesUtilServiceImpl propertiesUtilService;
 
-	public ProcessPropertiesImpl() {
+	public PropertiesAnalyzerImpl() {
 		super();
 	}
 
-	public ProcessPropertiesImpl(List<PropertiesAlias> properties, List<Matcher> matchers, DocumentWriter writer) {
-		super();
-		this.properties = properties;
-		this.matchers = matchers;
+	public void setWriter(DocumentWriter writer) {
 		this.writer = writer;
 	}
 
-	public void process() {
+	public void setProperties(List<PropertiesAlias> properties) {
+		this.properties = properties;
+	}
 
+	public void setMatchers(List<Matcher> matchers) {
+		this.matchers = matchers;
+	}
+
+	public void process() {
 		List<String> keys = getKeys();
 
 		printHeader();
@@ -53,9 +64,9 @@ public class ProcessPropertiesImpl {
 	}
 
 	protected void processKey(String key) {
-		writer.h2(key);
 		List<String> values = getValues(key);
 		if (propertiesUtilService.hasMismatch(matchers, values)) {
+			writer.h2(key);
 			for (int i = 0; i < properties.size(); i++) {
 				processValue(key, properties.get(i).getAlias(), values.get(i));
 			}
