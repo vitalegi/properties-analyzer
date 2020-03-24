@@ -14,12 +14,12 @@ mvn clean package
 
 ```bash
 set PATH=C:\Program Files\Java\jdk1.8.0_131\bin;%PATH%
-java -jar .\target\properties-analyzer-0.0.1.jar <OPTIONS>
+java -jar .\target\properties-analyzer-0.0.2.jar <OPTIONS>
 ```
 
 ### OPTIONS
 
-`--a=alias1 --f=path\to\file1.properties --a=alias2 --f=path\to\file2.properties --a=alias3 --f=path\to\file3.properties --o=path\to\output\file`
+`--a=alias1 --f=path\to\file1.properties --a=alias2 --f=path\to\file2.properties --a=alias3 --f=path\to\file3.properties --m=mode --o=path\to\output\file`
 
 `--a` _alias_
 
@@ -30,12 +30,19 @@ Alias of the next properties file declared.
 
 Path where properties file is located.
 
+`--m` _mode_
+
+Mode to use. Possible values:
+
+- list
+- tabular
+
 `--o` _filepath_
 
 Path where to store the resulting analysis
 
 #### Example usage
 
-`--a=test --f=test-application.properties --a=uat --f=uat-application.properties --a=preprod --f=preprod-application.properties --a=prod --f=prod-application.properties --o=diffs.html`
+`--a=test --f=test-application.properties --a=uat --f=uat-application.properties --a=preprod --f=preprod-application.properties --a=prod --f=prod-application.properties --m=tabular --o=diffs.html`
 
 Will analyze the files _test-application.properties_ (test), _uat-application.properties_ (uat), _preprod-application.properties_ (preprod), _prod-application.properties_ (prod), printing the results to file _diffs.html_.

@@ -1,7 +1,9 @@
 package it.vitalegi.propertiesanalyzer;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,11 +17,10 @@ import it.vitalegi.propertiesanalyzer.writer.DocumentWriter;
 
 @Service
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class PropertiesAnalyzerImpl implements PropertiesProcessor {
+public class PropertiesComparatorImpl implements PropertiesProcessor {
+	Logger log = LoggerFactory.getLogger(PropertiesComparatorImpl.class);
 
-	Logger log = LoggerFactory.getLogger(PropertiesAnalyzerImpl.class);
-
-	public static final String MODE = "list";
+	public static final String MODE = "tabular";
 
 	DocumentWriter writer;
 	List<PropertiesAlias> properties;
@@ -28,7 +29,7 @@ public class PropertiesAnalyzerImpl implements PropertiesProcessor {
 	@Autowired
 	PropertiesUtilServiceImpl propertiesUtilService;
 
-	public PropertiesAnalyzerImpl() {
+	public PropertiesComparatorImpl() {
 		super();
 	}
 
@@ -48,16 +49,17 @@ public class PropertiesAnalyzerImpl implements PropertiesProcessor {
 	public void process() {
 		List<String> keys = getKeys();
 
-		printHeader();
+		writer.h1("Compare");
+		List<String> headers = new ArrayList<>();
+		headers.add("Key");
+		properties.stream().map(PropertiesAlias::getAlias).forEach(headers::add);
+		headers.add("Interesting Matchers");
+
+		writer.tableHeaders(headers);
+
 		for (String key : keys) {
 			processKey(key);
 		}
-	}
-
-	protected void printHeader() {
-		writer.h1("Diff");
-		writer.h2("Matchers used");
-		matchers.forEach(matcher -> writer.list(matcher.name() + ": " + matcher.description()));
 	}
 
 	protected List<String> getKeys() {
@@ -68,28 +70,20 @@ public class PropertiesAnalyzerImpl implements PropertiesProcessor {
 
 	protected void processKey(String key) {
 		List<String> values = getValues(key);
-		if (propertiesUtilService.hasMismatch(matchers, values)) {
-			writer.h2(key);
-			for (int i = 0; i < properties.size(); i++) {
-				processValue(key, properties.get(i).getAlias(), values.get(i));
-			}
-		}
-	}
 
-	protected void processValue(String key, String alias, String value) {
-		writer.h3("Value: `" + value + "` - " + alias);
+		List<String> row = new ArrayList<>();
 
-		for (Matcher matcher : matchers) {
-			List<String> values = getValues(key);
-			if (propertiesUtilService.isInteresting(matcher, values, value)) {
-				writer.list(matcher.name());
-			}
-		}
-		writer.newLine();
+		row.add(key);
+		values.stream().map(s -> "`" + s + "`").forEach(row::add);
+
+		row.add(propertiesUtilService.getMismatchMatchers(matchers, values)//
+				.stream().map(Matcher::name).collect(Collectors.joining(", ")));
+
+		writer.tableRow(row);
+
 	}
 
 	protected List<String> getValues(String key) {
 		return propertiesUtilService.getValues(properties, key);
 	}
-
 }

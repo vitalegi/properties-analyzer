@@ -18,9 +18,9 @@ import it.vitalegi.propertiesanalyzer.writer.HtmlWriter;
 import it.vitalegi.propertiesanalyzer.writer.MarkdownWriter;
 
 @SpringBootTest(classes = SpringTestConfig.class)
-public class PropertiesAnalyzerTest {
+public class PropertiesComparatorTest {
 
-	Logger log = LoggerFactory.getLogger(PropertiesAnalyzerTest.class);
+	Logger log = LoggerFactory.getLogger(PropertiesComparatorTest.class);
 
 	@Autowired
 	PropertiesProcessorFactory factory;
@@ -46,15 +46,14 @@ public class PropertiesAnalyzerTest {
 				"key1", "value1", //
 				"key3", "value3"));
 
-		PropertiesProcessor service = factory.newAnalyzerInstance(properties, Matcher.matchers());
-
-		try (DocumentWriter writer = new MarkdownWriter("test-analyzer.md")) {
+		PropertiesProcessor service = factory.newComparatorInstance(properties, Matcher.matchers());
+		try (DocumentWriter writer = new MarkdownWriter("test-comparator.md")) {
 			service.setWriter(writer);
 			service.process();
 		}
 
-		service = factory.newAnalyzerInstance(properties, Matcher.matchers());
-		try (DocumentWriter writer = new HtmlWriter("test-analyzer.html")) {
+		service = factory.newComparatorInstance(properties, Matcher.matchers());
+		try (DocumentWriter writer = new HtmlWriter("test-comparator.html")) {
 			service.setWriter(writer);
 			service.process();
 		}
