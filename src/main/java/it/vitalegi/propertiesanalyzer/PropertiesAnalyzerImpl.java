@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import it.vitalegi.propertiesanalyzer.matcher.Matcher;
+import it.vitalegi.propertiesanalyzer.util.StringUtil;
 import it.vitalegi.propertiesanalyzer.writer.DocumentWriter;
 
 @Service
@@ -65,8 +66,14 @@ public class PropertiesAnalyzerImpl {
 
 	protected void processKey(String key) {
 		List<String> values = getValues(key);
-		if (propertiesUtilService.hasMismatch(matchers, values)) {
+		if (propertiesUtilService.trigger(matchers, values)) {
 			writer.h2(key);
+			for (Matcher matcher : matchers) {
+				if (matcher.trigger(values)) {
+					writer.list(matcher.name() + ": " + matcher.description());
+				}
+			}
+			writer.newLine();
 			for (int i = 0; i < properties.size(); i++) {
 				processValue(key, properties.get(i).getAlias(), values.get(i));
 			}
@@ -74,15 +81,11 @@ public class PropertiesAnalyzerImpl {
 	}
 
 	protected void processValue(String key, String alias, String value) {
-		writer.h3("Value: `" + value + "` - " + alias);
-
-		for (Matcher matcher : matchers) {
-			List<String> values = getValues(key);
-			if (propertiesUtilService.isInteresting(matcher, values, value)) {
-				writer.list(matcher.name());
-			}
+		if (StringUtil.isNullOrEmpty(value)) {
+			writer.h3("Value: `null` - " + alias);
+		} else {
+			writer.h3("Value: `" + value + "` - " + alias);
 		}
-		writer.newLine();
 	}
 
 	protected List<String> getValues(String key) {

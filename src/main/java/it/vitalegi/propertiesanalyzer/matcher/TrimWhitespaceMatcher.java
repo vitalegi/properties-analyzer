@@ -3,7 +3,7 @@ package it.vitalegi.propertiesanalyzer.matcher;
 public class TrimWhitespaceMatcher extends AbstractMatcher {
 	@Override
 	public String description() {
-		return "Checks if the text starts/ends with whitespaces.";
+		return "Contains whitespaces?";
 	}
 
 	@Override

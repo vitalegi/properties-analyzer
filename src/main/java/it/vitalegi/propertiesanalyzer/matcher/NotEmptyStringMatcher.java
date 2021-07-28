@@ -5,7 +5,7 @@ import it.vitalegi.propertiesanalyzer.util.StringUtil;
 public class NotEmptyStringMatcher extends AbstractMatcher {
 	@Override
 	public String description() {
-		return "Checks if the text contains something.";
+		return "Is not empty?";
 	}
 
 	@Override

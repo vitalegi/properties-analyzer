@@ -2,8 +2,6 @@ package it.vitalegi.propertiesanalyzer.matcher;
 
 import java.util.List;
 
-import it.vitalegi.propertiesanalyzer.util.ListUtil;
-
 public abstract class AbstractMatcher implements Matcher {
 
 	@Override
@@ -12,23 +10,11 @@ public abstract class AbstractMatcher implements Matcher {
 	}
 
 	@Override
-	public boolean allMatches(List<String> values) {
-		if (ListUtil.isEmpty(values)) {
-			// return true;
-		}
-		for (String value : values) {
-			if (!matches(value)) {
-				return false;
-			}
-		}
-		return true;
+	public boolean trigger(List<String> values) {
+		return anyMatches(values) && anyNotMatches(values);
 	}
 
-	@Override
-	public boolean anyMatches(List<String> values) {
-		if (ListUtil.isEmpty(values)) {
-			// return true;
-		}
+	protected boolean anyMatches(List<String> values) {
 		for (String value : values) {
 			if (matches(value)) {
 				return true;
@@ -37,11 +23,7 @@ public abstract class AbstractMatcher implements Matcher {
 		return false;
 	}
 
-	@Override
-	public boolean anyNotMatches(List<String> values) {
-		if (ListUtil.isEmpty(values)) {
-			// return true;
-		}
+	protected boolean anyNotMatches(List<String> values) {
 		for (String value : values) {
 			if (!matches(value)) {
 				return true;
@@ -49,4 +31,6 @@ public abstract class AbstractMatcher implements Matcher {
 		}
 		return false;
 	}
+
+	protected abstract boolean matches(String value);
 }

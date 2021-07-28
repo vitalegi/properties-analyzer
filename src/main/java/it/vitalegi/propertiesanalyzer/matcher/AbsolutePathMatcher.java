@@ -9,10 +9,9 @@ public class AbsolutePathMatcher extends AbstractMatcher {
 
 	@Override
 	public String description() {
-		return "Checks if the text could be an absolute path, both for windows or unix.";
+		return "is an absolute path? Both windows and UNIX syntax";
 	}
 
-	@Override
 	public boolean matches(String value) {
 		if (StringUtil.isNullOrEmpty(value)) {
 			return false;

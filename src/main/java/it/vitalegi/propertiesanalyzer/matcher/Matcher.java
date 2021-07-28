@@ -14,16 +14,11 @@ public interface Matcher {
 				new DoubleMatcher(), //
 				new TrimWhitespaceMatcher(), //
 				new UrlMatcher(), //
-				new NotEmptyStringMatcher());
+				new NotEmptyStringMatcher(), //
+				new CopyPasteMatcher());
 	}
 
-	boolean allMatches(List<String> values);
-
-	boolean anyMatches(List<String> values);
-
-	boolean matches(String value);
-
-	boolean anyNotMatches(List<String> values);
+	public boolean trigger(List<String> values);
 
 	String name();
 

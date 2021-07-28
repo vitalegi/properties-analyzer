@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Ignore;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +24,6 @@ public class PropertiesAnalyzerTest {
 	@Autowired
 	PropertiesAnalyzerFactory factory;
 
-	@Ignore
 	@Test
 	void testAnalyze() throws IOException {
 		List<PropertiesAlias> properties = new ArrayList<>();
@@ -45,6 +43,7 @@ public class PropertiesAnalyzerTest {
 		properties.add(PropertiesUtil.createProperties("p2", //
 				"key1", "value1", //
 				"key3", "value3"));
+		properties.add(PropertiesUtil.createProperties("p3", "key1", "value1", "key3", "value3"));
 
 		PropertiesAnalyzerImpl service;
 		try (DocumentWriter writer = new MarkdownWriter("test.md")) {

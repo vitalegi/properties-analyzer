@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import it.vitalegi.propertiesanalyzer.matcher.AbstractMatcher;
 import it.vitalegi.propertiesanalyzer.matcher.Matcher;
 import it.vitalegi.propertiesanalyzer.util.PropertiesUtil;
 
@@ -52,32 +53,5 @@ public class PropertiesUtilServiceTest {
 
 	protected void assertListEquals(List<?> expected, List<?> actual) {
 		assertArrayEquals(expected.toArray(), actual.toArray());
-	}
-
-	@Test
-	void hasMismatchIfBothMatchMismatch() {
-		Matcher matcher = Mockito.mock(Matcher.class);
-		Mockito.when(matcher.anyMatches(Mockito.any())).thenReturn(true);
-		Mockito.when(matcher.anyNotMatches(Mockito.any())).thenReturn(true);
-
-		assertTrue(service.hasMismatch(matcher, Arrays.asList("1")));
-	}
-
-	@Test
-	void hasMismatchIfAllMatches() {
-		Matcher matcher = Mockito.mock(Matcher.class);
-		Mockito.when(matcher.anyMatches(Mockito.any())).thenReturn(true);
-		Mockito.when(matcher.anyNotMatches(Mockito.any())).thenReturn(false);
-
-		assertFalse(service.hasMismatch(matcher, Arrays.asList("1")));
-	}
-
-	@Test
-	void hasMismatchIfNoMatch() {
-		Matcher matcher = Mockito.mock(Matcher.class);
-		Mockito.when(matcher.anyMatches(Mockito.any())).thenReturn(false);
-		Mockito.when(matcher.anyNotMatches(Mockito.any())).thenReturn(true);
-
-		assertFalse(service.hasMismatch(matcher, Arrays.asList("1")));
 	}
 }

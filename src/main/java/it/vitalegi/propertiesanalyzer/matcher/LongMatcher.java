@@ -3,7 +3,7 @@ package it.vitalegi.propertiesanalyzer.matcher;
 public class LongMatcher extends AbstractMatcher {
 	@Override
 	public String description() {
-		return "Checks if the text is an integer number.";
+		return "Is an integer number?";
 	}
 
 	@Override

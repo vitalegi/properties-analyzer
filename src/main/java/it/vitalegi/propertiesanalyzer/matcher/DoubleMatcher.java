@@ -3,7 +3,7 @@ package it.vitalegi.propertiesanalyzer.matcher;
 public class DoubleMatcher extends AbstractMatcher {
 	@Override
 	public String description() {
-		return "Checks if the text is a decimal number.";
+		return "is a decimal number?";
 	}
 
 	@Override
