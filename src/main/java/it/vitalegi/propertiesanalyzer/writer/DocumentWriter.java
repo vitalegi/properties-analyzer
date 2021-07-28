@@ -1,7 +1,6 @@
 package it.vitalegi.propertiesanalyzer.writer;
 
 import java.io.Closeable;
-import java.util.List;
 
 public interface DocumentWriter extends Closeable {
 
@@ -15,7 +14,4 @@ public interface DocumentWriter extends Closeable {
 
 	void list(String value);
 
-	void tableHeaders(List<String> titles);
-
-	void tableRow(List<String> values);
 }

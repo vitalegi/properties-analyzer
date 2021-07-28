@@ -4,8 +4,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class MarkdownWriter implements DocumentWriter {
 
@@ -53,24 +51,6 @@ public class MarkdownWriter implements DocumentWriter {
 	@Override
 	public void list(String value) {
 		writer.append("- " + value + "\n");
-	}
-
-	@Override
-	public void tableHeaders(List<String> titles) {
-		writer.append(titles.stream().collect(Collectors.joining(" | ", "| ", " |")));
-		newLine();
-		writer.append("|");
-		for (int i = 0; i < titles.size(); i++) {
-			writer.append(" --- |");
-		}
-		newLine();
-	}
-
-	@Override
-	public void tableRow(List<String> values) {
-
-		writer.append(values.stream().collect(Collectors.joining(" | ", "| ", " |")));
-		newLine();
 	}
 
 	@Override

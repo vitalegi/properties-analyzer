@@ -23,7 +23,7 @@ public class PropertiesAnalyzerTest {
 	Logger log = LoggerFactory.getLogger(PropertiesAnalyzerTest.class);
 
 	@Autowired
-	PropertiesProcessorFactory factory;
+	PropertiesAnalyzerFactory factory;
 
 	@Ignore
 	@Test
@@ -46,16 +46,14 @@ public class PropertiesAnalyzerTest {
 				"key1", "value1", //
 				"key3", "value3"));
 
-		PropertiesProcessor service = factory.newAnalyzerInstance(properties, Matcher.matchers());
-
-		try (DocumentWriter writer = new MarkdownWriter("test-analyzer.md")) {
-			service.setWriter(writer);
+		PropertiesAnalyzerImpl service;
+		try (DocumentWriter writer = new MarkdownWriter("test.md")) {
+			service = factory.newInstance(writer, properties, Matcher.matchers());
 			service.process();
 		}
 
-		service = factory.newAnalyzerInstance(properties, Matcher.matchers());
-		try (DocumentWriter writer = new HtmlWriter("test-analyzer.html")) {
-			service.setWriter(writer);
+		try (DocumentWriter writer = new HtmlWriter("test.html")) {
+			service = factory.newInstance(writer, properties, Matcher.matchers());
 			service.process();
 		}
 	}

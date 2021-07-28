@@ -2,7 +2,6 @@ package it.vitalegi.propertiesanalyzer;
 
 import java.io.FileOutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -24,29 +23,23 @@ public class ProdApplicationRunner implements ApplicationRunner {
 	Logger log = LoggerFactory.getLogger(ProdApplicationRunner.class);
 
 	@Autowired
-	PropertiesProcessorFactory factory;
+	PropertiesAnalyzerFactory factory;
 
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
-
 		String out;
-		String mode;
-		List<String> aliases;
-		List<String> propertiesFiles;
-
 		try {
-			out = getOutFile(args);
-			mode = getMode(args);
-
-			aliases = args.getOptionValues("a");
-			propertiesFiles = args.getOptionValues("f");
-
-			if (aliases.size() != propertiesFiles.size()) {
-				throw new InvalidInputParameterException("Aliases and properties files don't match");
-			}
-		} catch (InvalidInputParameterException e) {
-			log.error("Invalid input provided: {}", e.getMessage());
+			out = args.getOptionValues("o").get(0);
+		} catch (Exception e) {
+			log.error("Missing out files. use argument --o=filename");
 			return;
+		}
+
+		List<String> aliases = args.getOptionValues("a");
+		List<String> propertiesFiles = args.getOptionValues("f");
+
+		if (aliases.size() != propertiesFiles.size()) {
+			log.error("Aliases and properties files don't match");
 		}
 
 		List<PropertiesAlias> properties = new ArrayList<>();
@@ -56,35 +49,11 @@ public class ProdApplicationRunner implements ApplicationRunner {
 			props.setProperties(PropertiesUtil.readFile(propertiesFiles.get(i)));
 			properties.add(props);
 		}
-		PropertiesProcessor service = factory.newInstance(mode, properties, Matcher.matchers());
 
 		try (DocumentWriter writer = new HtmlWriter(new FileOutputStream(out))) {
 
-			service.setWriter(writer);
+			PropertiesAnalyzerImpl service = factory.newInstance(writer, properties, Matcher.matchers());
 			service.process();
-		}
-	}
-
-	protected String getMode(ApplicationArguments args) {
-
-		List<String> acceptedValues = Arrays.asList(PropertiesAnalyzerImpl.MODE, PropertiesComparatorImpl.MODE);
-		String mode;
-		try {
-			mode = args.getOptionValues("m").get(0);
-		} catch (Exception e) {
-			throw new InvalidInputParameterException("Missing mode. use argument --m=mode, values: " + acceptedValues);
-		}
-		if (PropertiesAnalyzerImpl.MODE.equals(mode) || PropertiesComparatorImpl.MODE.equals(mode)) {
-			return mode;
-		}
-		throw new InvalidInputParameterException("Unrecognized mode. use argument --m=mode, values: " + acceptedValues);
-	}
-
-	protected String getOutFile(ApplicationArguments args) {
-		try {
-			return args.getOptionValues("o").get(0);
-		} catch (Exception e) {
-			throw new InvalidInputParameterException("Missing out files. use argument --o=filename");
 		}
 	}
 }

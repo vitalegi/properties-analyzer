@@ -3,7 +3,6 @@ package it.vitalegi.propertiesanalyzer;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -50,13 +49,20 @@ public class PropertiesUtilServiceImpl {
 	}
 
 	public boolean hasMismatch(List<Matcher> matchers, List<String> values) {
-		return !getMismatchMatchers(matchers, values).isEmpty();
-	}
-
-	public List<Matcher> getMismatchMatchers(List<Matcher> matchers, List<String> values) {
-		return matchers.stream()//
-				.filter(matcher -> hasMismatch(matcher, values))//
-				.collect(Collectors.toList());
+		for (Matcher matcher : matchers) {
+			if (hasMismatch(matcher, values)) {
+				return true;
+			}
+		}
+		// TODO REMOVE START
+		/*String value = values.get(0);
+		for (String v: values) {
+			if (!value.equals(v)) {
+				return true;
+			}
+		}*/
+		// TODO REMOVE END
+		return false;
 	}
 
 	public boolean hasMismatch(Matcher matcher, List<String> values) {

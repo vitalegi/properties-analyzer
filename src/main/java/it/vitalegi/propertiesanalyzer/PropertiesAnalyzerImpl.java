@@ -15,11 +15,9 @@ import it.vitalegi.propertiesanalyzer.writer.DocumentWriter;
 
 @Service
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class PropertiesAnalyzerImpl implements PropertiesProcessor {
+public class PropertiesAnalyzerImpl {
 
 	Logger log = LoggerFactory.getLogger(PropertiesAnalyzerImpl.class);
-
-	public static final String MODE = "list";
 
 	DocumentWriter writer;
 	List<PropertiesAlias> properties;
@@ -44,7 +42,6 @@ public class PropertiesAnalyzerImpl implements PropertiesProcessor {
 		this.matchers = matchers;
 	}
 
-	@Override
 	public void process() {
 		List<String> keys = getKeys();
 
